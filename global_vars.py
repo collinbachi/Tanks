@@ -13,5 +13,5 @@ fps = 25
 eventManager = events.EventManager()
 layerManager = layermanager.LayerManager();
 
-background = pygame.image.load('cloud800a.bmp')
+background = pygame.image.load('cloud65.bmp')
 window = pygame.display.set_mode((background.get_rect().width, background.get_rect().height), pygame.HWSURFACE)

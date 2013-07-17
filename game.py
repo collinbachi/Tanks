@@ -16,7 +16,7 @@ import cProfile
 eventManager = global_vars.eventManager
 _fps = 0.05
 _terrainImg = pygame.image.load('dirt.bmp')
-_tankImg = pygame.image.load('tanksprites.bmp')
+_tankImg = pygame.image.load('tank65.bmp')
 _soldatImg = pygame.image.load('soldatsprite.bmp')
 _numTanks = ('Tank', 'Tank', 'Tank', 'Soldat', 'Soldat')
 _tankDimensions = _tankImg.get_rect()  #pygame.Rect(0, 0, 37, 27)
@@ -81,10 +81,15 @@ def play():
                     global_vars.eventManager.post(events.Event(type='draw terrain'))
                 if event.key == K_t:
                     global_vars.eventManager.post(events.Event(type='render tanks'))
-                if event.key == K_RIGHT:
-                    global_vars.eventManager.post(events.Event(type='right'))
-                if event.key == K_LEFT:
-                    global_vars.eventManager.post(events.Event(type='left'))
+                if event.key == K_RIGHT or event.key == K_d:
+                    global_vars.eventManager.post(events.Event(type='right down'))
+                if event.key == K_LEFT or event.key == K_a:
+                    global_vars.eventManager.post(events.Event(type='left down'))
+            elif event.type == KEYUP:
+                if event.key == K_RIGHT or event.key == K_d:
+                    global_vars.eventManager.post(events.Event(type='right up'))
+                if event.key == K_LEFT or event.key == K_a:
+                    global_vars.eventManager.post(events.Event(type='left up'))
                 
                     
             elif event.type == MOUSEMOTION:

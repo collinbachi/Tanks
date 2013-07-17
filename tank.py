@@ -26,8 +26,10 @@ class Tank(events.EventUser, layermanager.Sprite):
         self.eventManager.subscribe(self, 'click')
         self.eventManager.subscribe(self, 'turn')
         self.eventManager.subscribe(self, 'render tanks')
-        self.eventManager.subscribe(self, 'left')
-        self.eventManager.subscribe(self, 'right')
+        self.eventManager.subscribe(self, 'left down')
+        self.eventManager.subscribe(self, 'right down')
+        self.eventManager.subscribe(self, 'left up')
+        self.eventManager.subscribe(self, 'right up')
         
         self.myRect = rect.copy()
         self.level = le
@@ -88,12 +90,16 @@ class Tank(events.EventUser, layermanager.Sprite):
             self.turn = e.t
             self.isTurn = self.turn == self.id
             self.canFire = True
-        elif e.type == 'left' and self.isTurn:
-            self.isMovingLeft ^= True
+        elif e.type == 'left down' and self.isTurn:
+            self.isMovingLeft = True
             self.isMovingRight = False
-        elif e.type == 'right' and self.isTurn:
-            self.isMovingRight ^= True
+        elif e.type == 'right down' and self.isTurn:
+            self.isMovingRight = True
             self.isMovingLeft = False
+        elif e.type == 'left up' and self.isTurn:
+            self.isMovingLeft = False
+        elif e.type == 'right up' and self.isTurn:
+            self.isMovingRight = False
         else: events.EventUser.processEvent(self, e)
         
     #Returns last bullet, needs to be replaced when new view is created
