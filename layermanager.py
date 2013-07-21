@@ -167,7 +167,7 @@ class AnimatedSprite(Sprite):
             if self.imagesDict == None:
                 self.imagesDict = dict()
             for i, name in enumerate(names):
-                cutter.left += cutter.width * i
+                cutter.left += cutter.width * i + 1
                 tempSurface.blit(allImages, (0,0), area = cutter)
                 tempSurfaceCopy = tempSurface.copy()
                 self.__dict__[name] = tempSurfaceCopy
