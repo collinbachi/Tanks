@@ -11,7 +11,7 @@ import global_vars
 import layermanager
 import pygame
 
-class Tank(events.EventUser, layermanager.Sprite):
+class Tank(events.EventUser, layermanager.AnimatedSprite):
     _gravity = 2
     _speed = 1
     _firePower = 15
@@ -19,8 +19,11 @@ class Tank(events.EventUser, layermanager.Sprite):
     
     
     def __init__(self, image, rect, le):
-
-        layermanager.Sprite.__init__(self, image, rect)
+        filesDict = {'tankorig.bmp': ['idle0']}
+        layermanager.AnimatedSprite.__init__(self, image, rect, filesDict)
+        self.init(image, rect, le)
+        
+    def init(self, image, rect, le):
         self.eventManager = global_vars.eventManager
         self.eventManager.subscribe(self, 'tick')
         self.eventManager.subscribe(self, 'click')
@@ -43,7 +46,7 @@ class Tank(events.EventUser, layermanager.Sprite):
         self.turn = 0
         self.lastBullet = 0
         self.canFire = True
-        
+
     def tick(self):
         self.fall()
         if not self.isTurn: self.isMovingLeft, self.isMovingRight = False, False
@@ -110,7 +113,9 @@ class Soldat(Tank):
     ''' Variation of Tank '''
 
     def __init__(self, image, rect, le):
-        Tank.__init__(self, image, rect, le)
+        filesDict = {'soldier_left.bmp': ['left0', 'idle0', 'left1']}
+        layermanager.AnimatedSprite.__init__(self, image, rect, filesDict)
+        self.init(image, rect, le)
         self._gravity = 2
         self._speed = 5
         self._firePower = 10
@@ -119,7 +124,7 @@ class Soldat(Tank):
         if not self.canFire: return
         xmov = (x - self.myRect.centerx) / self._firePower
         ymov = (y - self.myRect.centery) / self._firePower
-        b = Bullet(self.myRect.centerx, self.myRect.centery, xmov, ymov, 1, 5, self)
+        b = Bullet(self.myRect.centerx, self.myRect.centery, xmov, ymov, 1, 5, self, 2)
         self.lastBullet = b
         self.canFire = False
         return b
@@ -128,8 +133,8 @@ class Soldat(Tank):
         
         
 class Bullet(events.EventUser, layermanager.Sprite):
-    def __init__(self, x, y, xm, ym, gm, xp, t):
-        self._radius = 2
+    def __init__(self, x, y, xm, ym, gm, xp, t, r=4):
+        self._radius = r
 
         mySurface = pygame.Surface((self._radius * 2, self._radius * 2))
         mySurface.fill(pygame.Color('white'))
@@ -177,4 +182,5 @@ class Bullet(events.EventUser, layermanager.Sprite):
         if not self.alive: 
             #print '109 BULLET LINE'
             self.eventManager.unsubscribe(self)
+            self.kill()
         if self.x > 1000 or self.x < -1000 or self.y > 1000 or self.y < -1000: self.kill()

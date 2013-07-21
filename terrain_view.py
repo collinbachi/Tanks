@@ -79,8 +79,10 @@ class TerrainView(layers.Layer, events.EventUser):
         
         pix = pix[lowx:highx, lowy:highy]
                     
-        news = pix.make_surface()
-        del pix
+        try:
+            news = pix.make_surface()
+            del pix
+        except: return
         global_vars.window.blit(news, pygame.Rect(lowx, lowy, highx - lowx, highy - lowy))   #global_vars.background.get_rect())
         self.terrain.changed = False
         global_vars.eventManager.post(events.Event(type='render tanks'))

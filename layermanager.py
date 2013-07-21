@@ -62,6 +62,7 @@ class Sprite(events.EventUser, layers.Layer):
     
     def __init__(self, image, rect):
         if isinstance(image, pygame.Surface): self.image = image
+        elif image is None: pass
         else: self.image = pygame.image.load(image)
         self.rect = rect
         #self.render()
@@ -124,4 +125,46 @@ class Sprite(events.EventUser, layers.Layer):
         
         self.render()
         #global_vars.render_buffer.push(self)
-        
+
+class AnimatedSprite(Sprite):
+    ''' An animated sprite '''
+
+    def __init__(self, image, rect, filesDict):
+        '''
+        filesDict will contain a dictionary of file name -> list pairs where the list
+        is a list of names corresponsing with frames. If there is more than one, the
+        file will be sliced up. Ex:
+
+        { "death_sprites.bmp": ["death0", "death1", "death2"] } will split the
+        death_sprites.bmp file into three images, which can later be displayed
+        for animation
+        '''
+
+        self.filesDict = filesDict
+        self.imagesDict = None
+        for key in self.filesDict:
+            self.cutImages(key, self.filesDict.get(key))
+        Sprite.__init__(self, self.imagesDict['idle0'], rect)
+
+    def cutImages(self, img, names):
+        if len(names) == 1:
+            tempSurface = pygame.image.load(img)
+            self.__dict__[names[0]] = tempSurface
+            #self.filesDict.set(img, eval('self.{}'.format(names[0]))) MAYBE
+            if self.imagesDict == None:
+                self.imagesDict = dict()
+            self.imagesDict[names[0]] = tempSurface
+        else:
+            allImages = pygame.image.load(img)
+            #print allImages.get_width() // len(names), allImages.get_height(), ' width/height'
+            tempSurface = pygame.Surface((allImages.get_width() // len(names), allImages.get_height()))
+            cutter = tempSurface.get_rect()
+            if self.imagesDict == None:
+                self.imagesDict = dict()
+            for i, name in enumerate(names):
+                cutter.left += cutter.width * i
+                tempSurface.blit(allImages, (0,0), area = cutter)
+                tempSurfaceCopy = tempSurface.copy()
+                self.__dict__[name] = tempSurfaceCopy
+                self.imagesDict[name] = tempSurfaceCopy
+    

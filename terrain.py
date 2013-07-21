@@ -22,8 +22,8 @@ class Terrain:
             for x in range(rect.left, rect.left + rect.width):
                 for y in range(rect.top, rect.top + rect.height):
                     if y < 0 or x < 0: 
-                        print 'negatives'
-                        return False
+                        print 'negatives777'
+                        return True #or False?
                     if (self.ter[y][x] == 1):
                         return True
             return False
@@ -34,7 +34,18 @@ class Terrain:
         try:
             if b.y < 0 or b.x < 0: 
                 print 'negatives69'
-                self.changed = False
+                lowy = b.y - b.blast - 1
+                highy = b.y + b.blast + 1
+                lowx = b.x - b.blast - 1
+                highx = b.x + b.blast + 1
+                if lowy < 0: lowy = 0
+                if lowx < 0: lowx = 0
+                if highy >= len(self.ter): highy = len(self.ter) 
+                if highx >= len(self.ter[0]): highx = len(self.ter[0]) 
+                if highy < lowy: highy = lowy + b.blast
+                if highx < lowx: highx = lowx + b.blast
+                self.changed = pygame.Rect(lowx, lowy, highx - lowx, highy - lowy)
+                global_vars.eventManager.post(events.Event(type='impact', rect = self.changed))
                 return True
             if self.ter[b.y][b.x] == 1:
                 #Collision!

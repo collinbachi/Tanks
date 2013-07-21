@@ -16,7 +16,7 @@ import cProfile
 eventManager = global_vars.eventManager
 _fps = 0.05
 _terrainImg = pygame.image.load('dirt.bmp')
-_tankImg = pygame.image.load('tank65.bmp')
+_tankImg = pygame.image.load('tankorig.bmp')
 _soldatImg = pygame.image.load('soldatsprite.bmp')
 _numTanks = ('Tank', 'Tank', 'Tank', 'Soldat', 'Soldat')
 _tankDimensions = _tankImg.get_rect()  #pygame.Rect(0, 0, 37, 27)
@@ -57,7 +57,7 @@ def tick():
     '''calls functions that must be called once every frame'''
 
     eventManager.post(events.Event(type = 'tick'))
-    eventManager.post(events.Event(type = 'rtick'))
+    #eventManager.post(events.Event(type = 'rtick'))
 
 
 def play():
