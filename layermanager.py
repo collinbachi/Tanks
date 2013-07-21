@@ -184,3 +184,6 @@ class AnimatedSprite(Sprite):
         except: 
             print 'animation error'
             pass
+
+    def set_img(self, name):
+        self.image = self.imagesDict[name]

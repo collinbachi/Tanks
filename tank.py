@@ -113,7 +113,8 @@ class Soldat(Tank):
     ''' Variation of Tank '''
 
     def __init__(self, image, rect, le):
-        filesDict = {'soldier_left.bmp': ['left0', 'idle0', 'left1']}
+        filesDict = {'soldier_left.bmp': ['left0', 'idle0', 'left1'],
+                     'soldier_right.bmp': ['right1', 'idle1', 'right0']}
         layermanager.AnimatedSprite.__init__(self, image, rect, filesDict)
         self.init(image, rect, le)
         self._gravity = 2
@@ -136,6 +137,14 @@ class Soldat(Tank):
         elif self.isMovingRight:
             self.animate('right')
         Tank.tick(self)
+
+    def processEvent(self, e):
+        if e.type == 'left up' and self.isTurn:
+            self.set_img('idle0')
+        elif e.type == 'right up' and self.isTurn:
+            self.set_img('idle1')
+        
+        Tank.processEvent(self, e)
 
 
         
