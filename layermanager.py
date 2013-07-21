@@ -167,4 +167,8 @@ class AnimatedSprite(Sprite):
                 tempSurfaceCopy = tempSurface.copy()
                 self.__dict__[name] = tempSurfaceCopy
                 self.imagesDict[name] = tempSurfaceCopy
+
+
+
+A LITTLE BIT CONFUSED BY GIT
     
