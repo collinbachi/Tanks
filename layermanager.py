@@ -65,6 +65,8 @@ class Sprite(events.EventUser, layers.Layer):
         elif image is None: pass
         else: self.image = pygame.image.load(image)
         self.rect = rect
+        self.rect.width = self.image.get_rect().width
+        self.rect.height = self.image.get_rect().height
         #self.render()
         self.myPixels = pygame.PixelArray(self.image.copy())
         layers.Layer.__init__(self, self)
@@ -144,6 +146,9 @@ class AnimatedSprite(Sprite):
         self.imagesDict = None
         for key in self.filesDict:
             self.cutImages(key, self.filesDict.get(key))
+
+        #global_vars.eventManager.subscribe(self, 'tick')
+        #self._eventMap = {'tick': self.animate}
         Sprite.__init__(self, self.imagesDict['idle0'], rect)
 
     def cutImages(self, img, names):
@@ -168,6 +173,14 @@ class AnimatedSprite(Sprite):
                 self.__dict__[name] = tempSurfaceCopy
                 self.imagesDict[name] = tempSurfaceCopy
 
-
-
-    sdafsadfsadfas
+    def animate(self, name):
+        self.frame += 1
+        try:
+            st = name + str(self.frame)
+            if st not in self.imagesDict.keys():
+                self.frame = 0
+                st = name + str(self.frame)
+            self.image = self.imagesDict[st]
+        except: 
+            print 'animation error'
+            pass

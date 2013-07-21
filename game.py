@@ -44,7 +44,7 @@ def init():
             newTank = tank.Tank(_tankImg, pygame.Rect(50 + i * 50 + i * _tankDimensions.width, 
                 terrainModel.maxHeight - _tankDimensions.height, _tankDimensions.width, _tankDimensions.height), terrainModel)
         elif _numTanks[i] == 'Soldat':
-            newTank = tank.Soldat(_soldatImg, pygame.Rect(50 + i * 50 + i * _soldatDimensions.width, 
+            newTank = tank.Soldat(_soldatImg, pygame.Rect(50 + i * 50 + i * (_soldatDimensions.width + 25), 
                 terrainModel.maxHeight - _soldatDimensions.height, _soldatDimensions.width, _soldatDimensions.height), terrainModel)
         newTank.id = i
         global_vars.layerManager.newSprite(newTank)

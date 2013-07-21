@@ -119,6 +119,7 @@ class Soldat(Tank):
         self._gravity = 2
         self._speed = 5
         self._firePower = 10
+        self.frame = 0
 
     def fire(self, x, y):
         if not self.canFire: return
@@ -128,6 +129,14 @@ class Soldat(Tank):
         self.lastBullet = b
         self.canFire = False
         return b
+
+    def tick(self):
+        if self.isMovingLeft:
+            self.animate('left')
+        elif self.isMovingRight:
+            self.animate('right')
+        Tank.tick(self)
+
 
         
         
