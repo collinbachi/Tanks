@@ -22,7 +22,7 @@ class Terrain:
             for x in range(rect.left, rect.left + rect.width):
                 for y in range(rect.top, rect.top + rect.height):
                     if y < 0 or x < 0: 
-                        print 'negatives777'
+                        #print 'negatives777'
                         return True #or False?
                     if (self.ter[y][x] == 1):
                         return True
@@ -33,7 +33,7 @@ class Terrain:
     def checkBullet(self, b):
         try:
             if b.y < 0 or b.x < 0: 
-                print 'negatives69'
+                #print 'negatives69'
                 lowy = b.y - b.blast - 1
                 highy = b.y + b.blast + 1
                 lowx = b.x - b.blast - 1

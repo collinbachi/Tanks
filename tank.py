@@ -10,6 +10,8 @@ import events
 import global_vars
 import layermanager
 import pygame
+import bresenham
+import math
 
 class Tank(events.EventUser, layermanager.AnimatedSprite):
     _gravity = 2
@@ -119,13 +121,16 @@ class Soldat(Tank):
         self.init(image, rect, le)
         self._gravity = 2
         self._speed = 5
-        self._firePower = 10
+        self._firePower = 35
         self.frame = 0
 
     def fire(self, x, y):
         if not self.canFire: return
-        xmov = (x - self.myRect.centerx) / self._firePower
-        ymov = (y - self.myRect.centery) / self._firePower
+        dx = x - self.myRect.centerx
+        dy = y - self.myRect.centery
+        dist = math.hypot(dx, dy)
+        xmov = int(round(1.0 * dx / dist * self._firePower))
+        ymov = int(round(1.0 * dy / dist * self._firePower))
         b = Bullet(self.myRect.centerx, self.myRect.centery, xmov, ymov, 1, 5, self, 2)
         self.lastBullet = b
         self.canFire = False
@@ -178,16 +183,29 @@ class Bullet(events.EventUser, layermanager.Sprite):
 
         if not self.alive: 
             self.eventManager.unsubscribe(self)            
-            print '<><><><><><><><><><><>'
+            #print '<><><><><><><><><><><>'
             del self.tank.lastBullet
             return
-        
+
+        self.lastx = self.x
+        self.lasty = self.y
+
         self.fakeTime += 1
         self.x += self.xmov
         self.ymov += self.g
         if self.ymov > 10: self.ymov = 10
         self.y += self.ymov
         
+        #Bug 2 Fix with bresenham's line alg
+        try:
+            for cord in bresenham.line((self.lastx, self.lasty), (self.x, self.y)):
+                if self.tank.level.ter[cord[1]][cord[0]] == 1:
+                    self.y = cord[1]
+                    self.x = cord[0]
+                    #print 'SMALLPEACEOFLAND'
+                    break
+        except: pass
+
         self.move(self.x, self.y)
         
         #if self.xmov > 1: self.xmov = 1
