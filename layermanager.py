@@ -187,3 +187,5 @@ class AnimatedSprite(Sprite):
 
     def set_img(self, name):
         self.image = self.imagesDict[name]
+
+#Fortunately not broken
