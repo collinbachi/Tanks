@@ -21,7 +21,10 @@ class Tank(events.EventUser, layermanager.AnimatedSprite):
     
     
     def __init__(self, image, rect, le):
-        filesDict = {'tankorig.bmp': ['idle0']}
+        filesDict = {'tankorig.bmp': ['idle0'],
+                     'tankspritesshot.bmp': ['rh shot0', 'rh shot1', 'rh shot2', 'rh shot3', 'rh shot4'],
+                     'ltankspritesshot.bmp': ['lh shot0', 'lh shot1', 'lh shot2', 'lh shot3', 'lh shot4']
+                     }
         layermanager.AnimatedSprite.__init__(self, image, rect, filesDict)
         self.init(image, rect, le)
         
@@ -45,12 +48,15 @@ class Tank(events.EventUser, layermanager.AnimatedSprite):
         self.isTurn = False
         self.isMovingRight = False
         self.isMovingLeft = False
+        self.isFacingRight = True
+        self.isFacingLeft = False
         self.turn = 0
         self.lastBullet = 0
         self.canFire = True
 
     def tick(self):
         self.fall()
+        self.animate()
         if not self.isTurn: self.isMovingLeft, self.isMovingRight = False, False
         if self.isMovingLeft:
             self.latMove(-self._speed)
@@ -74,6 +80,12 @@ class Tank(events.EventUser, layermanager.AnimatedSprite):
         b = Bullet(self.myRect.centerx, self.myRect.centery, xmov, ymov, self._gravity / 2, 20, self)
         self.lastBullet = b
         self.canFire = False
+        if self.isFacingLeft:
+            self.animate('lh shot', False)
+        elif self.isFacingRight:
+            self.animate('rh shot', False)
+        else:
+            print 'tank shot animation error'
         return b
 
     def latMove(self, delta):
@@ -103,8 +115,12 @@ class Tank(events.EventUser, layermanager.AnimatedSprite):
             self.isMovingLeft = False
         elif e.type == 'left up' and self.isTurn:
             self.isMovingLeft = False
+            self.isFacingLeft = True
+            self.isFacingRight = False
         elif e.type == 'right up' and self.isTurn:
             self.isMovingRight = False
+            self.isFacingRight = True
+            self.isFacingLeft = False
         else: events.EventUser.processEvent(self, e)
         
     #Returns last bullet, needs to be replaced when new view is created

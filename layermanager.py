@@ -150,6 +150,8 @@ class AnimatedSprite(Sprite):
         #global_vars.eventManager.subscribe(self, 'tick')
         #self._eventMap = {'tick': self.animate}
         Sprite.__init__(self, self.imagesDict['idle0'], rect)
+        self.lastName = 'idle0'
+        self.frame = 0
 
     def cutImages(self, img, names):
         if len(names) == 1:
@@ -173,17 +175,27 @@ class AnimatedSprite(Sprite):
                 self.__dict__[name] = tempSurfaceCopy
                 self.imagesDict[name] = tempSurfaceCopy
 
-    def animate(self, name):
+    def animate(self, name = '', LOOP = True):
         self.frame += 1
+        if name == '':
+            name = self.lastName
+        else:
+            self.lastName = name
+
         try:
             st = name + str(self.frame)
             if st not in self.imagesDict.keys():
-                self.frame = 0
-                st = name + str(self.frame)
+                if LOOP:
+                    self.frame = 0
+                    st = name + str(self.frame)
+                else:
+                    return True #Done
             self.image = self.imagesDict[st]
         except: 
-            print 'animation error'
+            print 'animation error' + str(self)
             pass
+        #self.render()
+        return False
 
     def set_img(self, name):
         self.image = self.imagesDict[name]
