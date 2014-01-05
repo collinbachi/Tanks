@@ -10,7 +10,7 @@ import pygame, sys, tank, terrain, global_vars
 from pygame.locals import *
 import time
 import events
-import cProfile
+#import cProfile
 
 
 eventManager = global_vars.eventManager
@@ -19,21 +19,18 @@ _terrainImg = pygame.image.load('dirt.bmp')
 _tankImg = pygame.image.load('tankorig.bmp')
 _soldatImg = pygame.image.load('soldatsprite.bmp')
 _numTanks = ('Tank', 'Tank', 'Tank', 'Soldat', 'Soldat')
-_tankDimensions = _tankImg.get_rect()  #pygame.Rect(0, 0, 37, 27)
+_tankDimensions = _tankImg.get_rect()
 _soldatDimensions = _soldatImg.get_rect()
 fpsClock = pygame.time.Clock()
 _turnTime = 5
-background = global_vars.background    #background = _backImg
-window = global_vars.window     #window = pygame.display.set_mode((background.get_rect().width, background.get_rect().height))
-print background.get_rect().width, background.get_rect().height
+background = global_vars.background
+window = global_vars.window
 pygame.display.set_caption('TANKS')
 global_vars.layerManager.newSprite(background, background.get_rect())
 terrainModel = terrain.Terrain(background.get_rect(), background.get_rect().height // 2)
 global_vars.layerManager.newTerrain(_terrainImg, terrainModel)
 oldTime = 0
 turn = 0
-
-    
 
 
 def init():
@@ -54,14 +51,17 @@ def init():
 
 
 def tick():
-    '''calls functions that must be called once every frame'''
+    ''' Calls functions that must be called once every frame '''
 
     eventManager.post(events.Event(type = 'tick'))
-    #eventManager.post(events.Event(type = 'rtick'))
 
 
 def play():
-    ''' Main game loop '''
+    '''
+     Main game loop
+
+     Accepts user input and posts relevant events, handles pause state, ticks engine, etc. 
+     '''
     
     global oldTime
     global turn
@@ -72,6 +72,7 @@ def play():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
+                return
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     pygame.event.post(pygame.event.Event(QUIT))
@@ -100,36 +101,19 @@ def play():
                 eventManager.post(e)
                 e = events.Event(type = 'turn', t = turn)            
                 turn += 1
-                #print 'TURNCHANGE', turn
                 if turn == len(_numTanks): turn = 0
                 oldTime = time.time()
                 eventManager.post(e)
 
         if time.time() - oldTime > _fps:
-
-            '''
-            e = events.Event(type = 'turn', t = turn)
-            turn += 1
-           # print 'TURNCHANGE', turn
-            if turn == _numTanks: turn = 0
-            
-            oldTime = time.time()
-            eventManager.post(e)
-            '''
             pygame.display.update()
             oldTime = time.time()
         else:
             while time.time() - oldTime < _fps:
                 pass
         
-        
         if not paused: 
             tick()
 
-
-        #fpsClock.tick(_fps)
-
-cProfile.run("init()")
         
 init()
-        

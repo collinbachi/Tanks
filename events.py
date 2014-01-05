@@ -1,11 +1,16 @@
 '''
 Created on Jan 31, 2013
 
+The event system allows the various game entities to post and subscribe to certain types of events.
+
 @author: Collin
 '''
 import time
+
+
 class EventManager:
-    
+    ''' handles posts and subscriptions '''
+
     def __init__(self):
         
         self.subscriptions = {}
@@ -13,7 +18,7 @@ class EventManager:
     
     
     def subscribe(self, o, type):
-        
+
         self.eventLog.append('SUBSCRIBE: ' + str(o) + ' ' + type)
         if o in self.subscriptions:
             self.subscriptions[o].append(type)
@@ -29,7 +34,8 @@ class EventManager:
 
             
     def post(self, e):
-        
+        ''' notifies all entities subscribed to an event type that it has occured '''
+
         self.eventLog.append('Post: ' + str(e))
         for o in self.subscriptions.keys():
             if e.type in self.subscriptions[o]:

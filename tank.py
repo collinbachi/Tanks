@@ -21,11 +21,13 @@ class Tank(events.EventUser, layermanager.AnimatedSprite):
     
     
     def __init__(self, image, rect, le):
+
         filesDict = {'tankorig.bmp': ['idle0']}
         layermanager.AnimatedSprite.__init__(self, image, rect, filesDict)
         self.init(image, rect, le)
         
     def init(self, image, rect, le):
+
         self.eventManager = global_vars.eventManager
         self.eventManager.subscribe(self, 'tick')
         self.eventManager.subscribe(self, 'click')
@@ -50,6 +52,8 @@ class Tank(events.EventUser, layermanager.AnimatedSprite):
         self.canFire = True
 
     def tick(self):
+        ''' updates status every frame '''
+
         self.fall()
         if not self.isTurn: self.isMovingLeft, self.isMovingRight = False, False
         if self.isMovingLeft:
@@ -60,14 +64,19 @@ class Tank(events.EventUser, layermanager.AnimatedSprite):
         if self.myRect.top > 1000: self.kill()
 
     def fall(self):
+        ''' implements gravity '''
+
         self.myRect.top += self._gravity
         while self.checkCollide(self.myRect): self.myRect.top -= 1
         self.move(self.myRect.left, self.myRect.top)
         
     def checkCollide(self, rect):
+
         return self.level.checkCollide(rect)
     
     def fire(self, x, y):
+        ''' creates and initializes a bullet at the tank's location '''
+
         if not self.canFire: return
         xmov = ((x - self.myRect.centerx) / self._firePower)
         ymov = ((y - self.myRect.centery) / self._firePower)
@@ -77,6 +86,8 @@ class Tank(events.EventUser, layermanager.AnimatedSprite):
         return b
 
     def latMove(self, delta):
+        ''' moves the tank laterally '''
+
         newRect = self.myRect.copy()
         newRect.left += delta
         for jump in range(20):
@@ -89,6 +100,8 @@ class Tank(events.EventUser, layermanager.AnimatedSprite):
                 newRect.top -= 1
     
     def processEvent(self, e):
+        ''' calls functions and updates variables based on event posts '''
+
         if e.type == 'click' and self.isTurn:
             self.fire(e.x, e.y)
         elif e.type == 'turn':
@@ -107,14 +120,17 @@ class Tank(events.EventUser, layermanager.AnimatedSprite):
             self.isMovingRight = False
         else: events.EventUser.processEvent(self, e)
         
-    #Returns last bullet, needs to be replaced when new view is created
     def getRecentBullet(self): 
+        ''' outdated workaround - no longer used '''
+
         return self.lastBullet
+
 
 class Soldat(Tank):
     ''' Variation of Tank '''
 
     def __init__(self, image, rect, le):
+
         filesDict = {'soldier_left.bmp': ['left0', 'idle0', 'left1'],
                      'soldier_right.bmp': ['right1', 'idle1', 'right0']}
         layermanager.AnimatedSprite.__init__(self, image, rect, filesDict)
@@ -125,6 +141,8 @@ class Soldat(Tank):
         self.frame = 0
 
     def fire(self, x, y):
+        ''' creates and initializes a bullet '''
+
         if not self.canFire: return
         dx = x - self.myRect.centerx
         dy = y - self.myRect.centery
@@ -137,6 +155,8 @@ class Soldat(Tank):
         return b
 
     def tick(self):
+        ''' updates every frame '''
+
         if self.isMovingLeft:
             self.animate('left')
         elif self.isMovingRight:
@@ -144,6 +164,8 @@ class Soldat(Tank):
         Tank.tick(self)
 
     def processEvent(self, e):
+        ''' handles event posts '''
+
         if e.type == 'left up' and self.isTurn:
             self.set_img('idle0')
         elif e.type == 'right up' and self.isTurn:
@@ -151,12 +173,12 @@ class Soldat(Tank):
         
         Tank.processEvent(self, e)
 
-
-        
-        
         
 class Bullet(events.EventUser, layermanager.Sprite):
+    ''' bullets fired by Tanks and Soldats '''
+
     def __init__(self, x, y, xm, ym, gm, xp, t, r=4):
+
         self._radius = r
 
         mySurface = pygame.Surface((self._radius * 2, self._radius * 2))
@@ -164,7 +186,6 @@ class Bullet(events.EventUser, layermanager.Sprite):
         pygame.draw.circle(mySurface, pygame.Color('black'), (self._radius, self._radius), self._radius)
         pygame.draw.circle
         layermanager.Sprite.__init__(self, mySurface, pygame.Rect((x - self._radius, y - self._radius), (self._radius * 2, self._radius * 2)))
-        
         
         self.eventManager = global_vars.eventManager
         self.eventManager.subscribe(self, 'tick')
@@ -179,11 +200,16 @@ class Bullet(events.EventUser, layermanager.Sprite):
         self.blast = xp
         self.alive = True
         self._eventMap = {'tick': self.tick}
+
     def tick(self):
+        ''' 
+        Updates every frame and moves the bullet. Also checks for collision,
+        corrects for collisions that occur in between frames, and removes
+        the bullet when it is no longer needed. 
+        '''
 
         if not self.alive: 
             self.eventManager.unsubscribe(self)            
-            #print '<><><><><><><><><><><>'
             del self.tank.lastBullet
             return
 
@@ -202,21 +228,16 @@ class Bullet(events.EventUser, layermanager.Sprite):
                 if self.tank.level.ter[cord[1]][cord[0]] == 1:
                     self.y = cord[1]
                     self.x = cord[0]
-                    #print 'SMALLPEACEOFLAND'
                     break
         except: pass
 
         self.move(self.x, self.y)
         
-        #if self.xmov > 1: self.xmov = 1
-        #if self.ymov > 1: self.ymov = 1
         collision = self.tank.level.checkBullet(self)
         if collision: 
             self.alive = False
-            #print collision, '!!!!!!!!!!!', self.alive
         if self.fakeTime > 150: self.alive = False
         if not self.alive: 
-            #print '109 BULLET LINE'
             self.eventManager.unsubscribe(self)
             self.kill()
         if self.x > 1000 or self.x < -1000 or self.y > 1000 or self.y < -1000: self.kill()

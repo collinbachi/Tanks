@@ -16,6 +16,7 @@ class TerrainView(layers.Layer, events.EventUser):
     ''' Handles the rendering of the terrain '''
     
     def __init__(self, image, terrain):
+
         self.terrain = terrain
         self.image = image
         self.eventManager = global_vars.eventManager
@@ -24,12 +25,18 @@ class TerrainView(layers.Layer, events.EventUser):
         layers.Layer.__init__(self, image)
         
     def processEvent(self, e):
+
         if e.type == 'draw terrain':
             self.drawTerrain(True)
         elif e.type == 'impact':
             self.drawTerrain()
         
     def getPixel(self, x, y, returnsToManager=False):
+        ''' 
+        Returns either white (meaning transparent) or a pixel from the
+        background image
+        '''
+
         try:
             if self.terrain.ter[y][x] == 0 and returnsToManager == False:
                 return global_vars.layerManager.getPixel(x, y)
@@ -43,6 +50,7 @@ class TerrainView(layers.Layer, events.EventUser):
             else: return global_vars.layerManager.getPixel(x, y)
     
     def render(self):
+
         self.drawTerrain(True)
         
     def drawTerrain(self, fullRedraw=False):
@@ -56,26 +64,24 @@ class TerrainView(layers.Layer, events.EventUser):
             highx=self.terrain.changed.right
             lowy = self.terrain.changed.top
             highy = self.terrain.changed.bottom
-            print 'REDRAW'
+            #print 'REDRAW'
         else:
             lowx = 0
             highx=len(self.terrain.ter[0])
             lowy = 0
             highy = len(self.terrain.ter)
-            print 'FULL REDRAW'
+            #print 'FULL REDRAW'
         
         startTime = time.time()
         for i in range(lowy, highy):
             for j in range(lowx, highx):
                 if i < 0 or j < 0: 
-                    print 'negatives'
                     return False
                 if self.terrain.ter[i][j] == 0: pix[j][i] = global_vars.background.get_at((j, i))
-                #SHOULD USE IMPLEMENTATION BELOW, but too slow. IDK what to do
+                #SHOULD USE IMPLEMENTATION BELOW, but too slow
                 #pix[j][i] = global_vars.layerManager.getPixel(j, i)
                 
-                    
-        print 'Redraw Time: ', time.time() - startTime
+        #print 'Redraw Time: ', time.time() - startTime
         
         pix = pix[lowx:highx, lowy:highy]
                     
@@ -83,8 +89,6 @@ class TerrainView(layers.Layer, events.EventUser):
             news = pix.make_surface()
             del pix
         except: return
-        global_vars.window.blit(news, pygame.Rect(lowx, lowy, highx - lowx, highy - lowy))   #global_vars.background.get_rect())
+        global_vars.window.blit(news, pygame.Rect(lowx, lowy, highx - lowx, highy - lowy)) 
         self.terrain.changed = False
         global_vars.eventManager.post(events.Event(type='render tanks'))
-                
-                

@@ -6,6 +6,7 @@ Contains variables that must be used by multiple modules, especially singletons.
 @author: Collin
 '''
 import events, layermanager, pygame, time
+
 pygame.init()
 
 fps = 25

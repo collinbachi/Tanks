@@ -1,8 +1,11 @@
 '''
 Created on May 31, 2013
 
+Contains classes related to the view
+
 @author: Collin
 '''
+
 import events;
 import global_vars;
 import pygame;
@@ -12,20 +15,22 @@ from operator import attrgetter
 
 class LayerManager(events.EventUser):
     ''' 
-    Maintains a reference to all layersList. Increments depth. Creates new
-    layersList. Singleton.
+    Maintains a reference to all layers. Increments depth. Creates new
+    layers. Singleton.
     '''
     
     def __init__(self):
-        #print 'assigned'
+
         self.depth = 0;
         self.layersList = []; #will be sorted high to low depth
         
     def getHighestDepth(self):
+
         self.depth += 1;
         return self.depth;
     
     def getPixel(self, x, y):
+
         for i in range(len(self.layersList)):
             p = self.layersList[i].getPixel(x, y, True)
             if p != pygame.Color('white'): 
@@ -33,22 +38,20 @@ class LayerManager(events.EventUser):
         return pygame.Color('white')
     
     def newTerrain(self, image, terrain):
+
         terrainView = terrain_view.TerrainView(image, terrain)
         self.layersList.append(terrainView)
-        #print 'terrainView depth: ', terrainView.depth
         self.layersList = sorted(self.layersList, key=attrgetter('depth'), reverse=True)
         return terrainView
     
     def newSprite(self, image, rect=None):
+
         if not isinstance(image, Sprite):
             sprite = Sprite(image, rect)
         else: 
-            #print 'input was a sprite'
             sprite = image
         self.layersList.append(sprite)
-        #print 'sprite depth: ', self.layersList[len(self.layersList) - 1].depth
         self.layersList = sorted(self.layersList, key=attrgetter('depth'), reverse=True)
-
         return sprite
         
     
@@ -61,13 +64,13 @@ class Sprite(events.EventUser, layers.Layer):
     '''
     
     def __init__(self, image, rect):
+
         if isinstance(image, pygame.Surface): self.image = image
         elif image is None: pass
         else: self.image = pygame.image.load(image)
         self.rect = rect
         self.rect.width = self.image.get_rect().width
         self.rect.height = self.image.get_rect().height
-        #self.render()
         self.myPixels = pygame.PixelArray(self.image.copy())
         layers.Layer.__init__(self, self)
         
@@ -84,12 +87,10 @@ class Sprite(events.EventUser, layers.Layer):
             if returnsToManager: return pygame.Color('white')
             else: return global_vars.layerManager.getPixel(x, y)
         
-        if p != pygame.Color('white'): # and p != 16777215:
-            #print "p: {}".format(p) + " is not white: {}".format(pygame.Color('white'))
+        if p != pygame.Color('white'):
             return p
         elif returnsToManager: return pygame.Color('white')
         else: 
-            #print " {} is the color".format(global_vars.layerManager.getPixel(x, y))
             return global_vars.layerManager.getPixel(x, y)
     
     def render(self):
@@ -100,7 +101,6 @@ class Sprite(events.EventUser, layers.Layer):
         if self.rect.width < 100:
             pass
         else: 
-            #print 'CHECKCKCKKCC'
             global_vars.window.blit(self.image, self.rect)
             return
         pix = pygame.PixelArray(self.image.copy())
@@ -124,9 +124,7 @@ class Sprite(events.EventUser, layers.Layer):
         self.image = tempImage
         self.rect.left = x
         self.rect.top = y
-        
         self.render()
-        #global_vars.render_buffer.push(self)
 
 class AnimatedSprite(Sprite):
     ''' An animated sprite '''
@@ -147,21 +145,19 @@ class AnimatedSprite(Sprite):
         for key in self.filesDict:
             self.cutImages(key, self.filesDict.get(key))
 
-        #global_vars.eventManager.subscribe(self, 'tick')
-        #self._eventMap = {'tick': self.animate}
         Sprite.__init__(self, self.imagesDict['idle0'], rect)
 
     def cutImages(self, img, names):
+        ''' slices up an image into individual frames '''
+
         if len(names) == 1:
             tempSurface = pygame.image.load(img)
             self.__dict__[names[0]] = tempSurface
-            #self.filesDict.set(img, eval('self.{}'.format(names[0]))) MAYBE
             if self.imagesDict == None:
                 self.imagesDict = dict()
             self.imagesDict[names[0]] = tempSurface
         else:
             allImages = pygame.image.load(img)
-            #print allImages.get_width() // len(names), allImages.get_height(), ' width/height'
             tempSurface = pygame.Surface((allImages.get_width() // len(names), allImages.get_height()))
             cutter = tempSurface.get_rect()
             if self.imagesDict == None:
@@ -174,6 +170,8 @@ class AnimatedSprite(Sprite):
                 self.imagesDict[name] = tempSurfaceCopy
 
     def animate(self, name):
+        ''' updates the sprite's image to the next frame '''
+
         self.frame += 1
         try:
             st = name + str(self.frame)
@@ -186,6 +184,5 @@ class AnimatedSprite(Sprite):
             pass
 
     def set_img(self, name):
-        self.image = self.imagesDict[name]
 
-#Fortunately not broken
+        self.image = self.imagesDict[name]

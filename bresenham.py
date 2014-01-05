@@ -2,7 +2,8 @@
 
 
 def line((x,y),(x2,y2)):
-    """Brensenham line algorithm"""
+    ''' Brensenham line algorithm '''
+    
     steep = 0
     coords = []
     dx = abs(x2 - x)

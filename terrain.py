@@ -1,6 +1,8 @@
 '''
 Created on Jan 19, 2013
 
+Models the destructible terrain
+
 @author: Collin
 '''
 import pygame, random
@@ -9,8 +11,10 @@ import global_vars
 import events
 
 class Terrain:
-    
+    ''' models the destructible terrain '''
+
     def __init__(self, r, h, s=25):
+
         self.rect = r
         self.maxHeight = h
         self.smoothFactor = s
@@ -18,12 +22,13 @@ class Terrain:
         self.changed = True
         
     def checkCollide(self, rect):
+        ''' accepts a rectangle, checks if any point inside contains land '''
+
         try:
             for x in range(rect.left, rect.left + rect.width):
                 for y in range(rect.top, rect.top + rect.height):
                     if y < 0 or x < 0: 
-                        #print 'negatives777'
-                        return True #or False?
+                        return True
                     if (self.ter[y][x] == 1):
                         return True
             return False
@@ -31,9 +36,14 @@ class Terrain:
             return False
     
     def checkBullet(self, b):
+        '''
+        Checks if a bullet is colliding with land. If so, it designates a 
+        rectangle around the collision point based on the bullet's blast
+        radius to be rerendered by the next frame
+        '''
+
         try:
             if b.y < 0 or b.x < 0: 
-                #print 'negatives69'
                 lowy = b.y - b.blast - 1
                 highy = b.y + b.blast + 1
                 lowx = b.x - b.blast - 1
@@ -70,12 +80,15 @@ class Terrain:
             return True
         
     def generateTerrain(self):
-        ''' Generates terrain by assigning each column of pixels a random height '''
+        ''' 
+        Generates terrain by assigning each column of pixels a random height, 
+        and then repeatedly averaging with neighbors to smooth the terrain.
+        '''
         
         heights = [random.choice(range(1, self.maxHeight)) for p in range(self.rect.width)]
         for i in range(len(heights)): heights[i] += round(math.sin(6 * 3.14 /len(heights) * i) * 30)
         
-        #smoothes terrain by averaging with neighbors
+        #smoothes terrain
         for i in range(self.smoothFactor):
             for n in range(2, len(heights) - 1):
                 heights[n] = sum(heights[n - 2: n + 3]) / 5 
@@ -93,5 +106,3 @@ class Terrain:
                 else: pixArray[n][j] = 0
                 
         return pixArray
-    
-    
