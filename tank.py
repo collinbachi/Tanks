@@ -61,7 +61,9 @@ class Tank(events.EventUser, layermanager.AnimatedSprite):
         elif self.isMovingRight:
             self.latMove(self._speed)
         
-        if self.myRect.top > 550: self.kill()
+        if self.myRect.top > 550: 
+            print ' KILL'
+            global_vars.layerManager.killSprite(self)
 
     def fall(self):
         ''' implements gravity '''
@@ -242,7 +244,6 @@ class Bullet(events.EventUser, layermanager.Sprite):
             self.alive = False
         if self.fakeTime > 150: self.alive = False
         if not self.alive: 
-            self.eventManager.unsubscribe(self)
-            self.wipe()
+            global_vars.layerManager.killSprite(self)
         if self.x > 1000 or self.x < -1000 or self.y > 1000 or self.y < -1000: 
-            self.eventManager.unsubscribe(self)
+            global_vars.layerManager.killSprite(self)

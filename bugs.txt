@@ -3,3 +3,5 @@
 *2) Soldier shooting, and tank shooting, can cause a blast inside the terrain. I need to add a line cast with slope etc. to step back through the bullet's path and find the first thing it hit. This should work regardless of how fast the bullet is moving aka how far it moves each step.
 
 3) Soldier and Tank need more animations.
+
+4) SEGFAULT happens when a sprite goes offscreen
