@@ -61,7 +61,7 @@ class Tank(events.EventUser, layermanager.AnimatedSprite):
         elif self.isMovingRight:
             self.latMove(self._speed)
         
-        if self.myRect.top > 1000: self.kill()
+        if self.myRect.top > 550: self.kill()
 
     def fall(self):
         ''' implements gravity '''

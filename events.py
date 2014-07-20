@@ -41,6 +41,11 @@ class EventManager:
             if e.type in self.subscriptions[o]:
                 o.processEvent(e)
                 
+
+    def isMember(self, o):
+        if o in self.subscriptions: return True
+        return False
+
                 
     def printLog(self, type = 'NONE'):
         

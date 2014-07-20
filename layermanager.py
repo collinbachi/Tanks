@@ -53,6 +53,12 @@ class LayerManager(events.EventUser):
         self.layersList.append(sprite)
         self.layersList = sorted(self.layersList, key=attrgetter('depth'), reverse=True)
         return sprite
+
+    def killSprite(self, sprite):
+        sprite.move(1000, 1000)
+        self.layersList.remove(sprite)
+        global_vars.eventManager.unsubscribe(sprite)
+        del sprite
         
     
     
@@ -90,7 +96,10 @@ class Sprite(events.EventUser, layers.Layer):
         if p != pygame.Color('white'):
             return p
         elif returnsToManager: return pygame.Color('white')
-        else: 
+        else:
+            #try: 
+            #    if self.TEXT_TEST: print p, global_vars.layerManager.getPixel(x, y)
+            #except: pass
             return global_vars.layerManager.getPixel(x, y)
     
     def render(self):
@@ -99,6 +108,9 @@ class Sprite(events.EventUser, layers.Layer):
         #quick fix, will change when Sprite inherits from Layer
         #prevents background image from taking 10k years to load
         if self.rect.width < 100:
+            #try: 
+            #    if self.TEXT_TEST: print 'WORKINGHERE?'
+            #except: pass
             pass
         else: 
             global_vars.window.blit(self.image, self.rect)
@@ -108,9 +120,15 @@ class Sprite(events.EventUser, layers.Layer):
             for j in range(self.rect.width):
                 testp =  self.getPixel(self.rect.left + j, self.rect.top + i)
                 pix[j][i] = testp
+                #try: 
+                #    if self.TEXT_TEST: print pix[j]
+                #except: pass
         blitSurface = pix.make_surface()
         del pix
         global_vars.window.blit(blitSurface, self.rect)
+        #try: 
+        #    if self.TEXT_TEST: global_vars.window.blit(blitSurface, (250,250))
+        #except: pass
         
         
     def move(self, x, y):

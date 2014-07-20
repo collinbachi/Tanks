@@ -16,3 +16,4 @@ layerManager = layermanager.LayerManager();
 
 background = pygame.image.load('cloud65.bmp')
 window = pygame.display.set_mode((background.get_rect().width, background.get_rect().height))
+idLookup = []

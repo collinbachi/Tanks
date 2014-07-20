@@ -10,6 +10,8 @@ import pygame, sys, tank, terrain, global_vars
 from pygame.locals import *
 import time
 import events
+import controller
+import hud
 #import cProfile
 
 
@@ -31,7 +33,8 @@ terrainModel = terrain.Terrain(background.get_rect(), background.get_rect().heig
 global_vars.layerManager.newTerrain(_terrainImg, terrainModel)
 oldTime = 0
 turn = 0
-
+global_vars.idLookup = [0] * len(_numTanks)
+ctr = None
 
 def init():
     ''' Initializes tanks, first function called '''
@@ -44,9 +47,13 @@ def init():
             newTank = tank.Soldat(_soldatImg, pygame.Rect(50 + i * 50 + i * (_soldatDimensions.width + 25), 
                 terrainModel.maxHeight - _soldatDimensions.height, _soldatDimensions.width, _soldatDimensions.height), terrainModel)
         newTank.id = i
+        global_vars.idLookup[i] = newTank
         global_vars.layerManager.newSprite(newTank)
     for i in range(50): 
         eventManager.post(events.Event(type = 'tick'))
+    global ctr
+    ctr = controller.Controller(turn)
+    turnText = hud.TurnText('1', (50, 50))
     play()
 
 
@@ -99,11 +106,8 @@ def play():
                 mousex, mousey = event.pos
                 e = events.Event(type = 'click', x = mousex, y = mousey)
                 eventManager.post(e)
-                e = events.Event(type = 'turn', t = turn)            
-                turn += 1
-                if turn == len(_numTanks): turn = 0
+                turn = ctr.changeTurn()
                 oldTime = time.time()
-                eventManager.post(e)
 
         if time.time() - oldTime > _fps:
             pygame.display.update()
