@@ -211,6 +211,7 @@ class AnimatedSprite(Sprite):
                 cutter.left += cutter.width * i + 1
                 tempSurface.blit(allImages, (0,0), area = cutter)
                 tempSurfaceCopy = tempSurface.copy()
+                tempSurfaceCopy.set_colorkey(pygame.Color('white'))
                 self.__dict__[name] = tempSurfaceCopy
                 self.imagesDict[name] = tempSurfaceCopy
 
