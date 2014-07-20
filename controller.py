@@ -19,8 +19,10 @@ class Controller:
 	def changeTurn(self):
 		self.turn += 1
 		if self.turn == len(global_vars.idLookup): self.turn = 0
-		while not self.eventManager.isMember(global_vars.idLookup[self.turn]):
-			self.turn += 1
+		try:
+			while not self.eventManager.isMember(global_vars.idLookup[self.turn]):
+				self.turn += 1
+		except: self.changeTurn()
 		e = events.Event(type = 'turn', t = self.turn)
 		self.eventManager.post(e)
 		return self.turn

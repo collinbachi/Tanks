@@ -4,4 +4,4 @@
 
 3) Soldier and Tank need more animations.
 
-4) SEGFAULT happens when a sprite goes offscreen
+*4) SEGFAULT happens when a sprite goes offscreen

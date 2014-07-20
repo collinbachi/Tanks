@@ -56,10 +56,11 @@ class LayerManager(events.EventUser):
         return sprite
 
     def killSprite(self, sprite):
-        sprite.move(1000, 1000)
+        #return
+        #sprite.move(1000, 1000)
         self.layersList.remove(sprite)
         global_vars.eventManager.unsubscribe(sprite)
-        del sprite
+        #del sprite
         
     
     
@@ -106,6 +107,7 @@ class Sprite(events.EventUser, layers.Layer):
     
     def render(self):
         ''' draws sprite to screen '''
+        print 'render', self.rect.top
         
         #quick fix, will change when Sprite inherits from Layer
         #prevents background image from taking 10k years to load

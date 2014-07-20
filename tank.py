@@ -61,7 +61,7 @@ class Tank(events.EventUser, layermanager.AnimatedSprite):
         elif self.isMovingRight:
             self.latMove(self._speed)
         
-        if self.myRect.top > 550: 
+        if self.myRect.top > 400: 
             print ' KILL'
             global_vars.layerManager.killSprite(self)
 
