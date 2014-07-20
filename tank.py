@@ -185,7 +185,11 @@ class Bullet(events.EventUser, layermanager.Sprite):
         mySurface.fill(pygame.Color('white'))
         pygame.draw.circle(mySurface, pygame.Color('black'), (self._radius, self._radius), self._radius)
         pygame.draw.circle
-        layermanager.Sprite.__init__(self, mySurface, pygame.Rect((x - self._radius, y - self._radius), (self._radius * 2, self._radius * 2)))
+        layermanager.Sprite.__init__(self, mySurface, 
+            pygame.Rect((x - self._radius, y - self._radius), 
+                (self._radius * 2, self._radius * 2)))
+        #print self.image, self.rect, ' is a bullet'
+        global_vars.layerManager.newSprite(self)
         
         self.eventManager = global_vars.eventManager
         self.eventManager.subscribe(self, 'tick')
@@ -239,5 +243,6 @@ class Bullet(events.EventUser, layermanager.Sprite):
         if self.fakeTime > 150: self.alive = False
         if not self.alive: 
             self.eventManager.unsubscribe(self)
-            self.kill()
-        if self.x > 1000 or self.x < -1000 or self.y > 1000 or self.y < -1000: self.kill()
+            self.wipe()
+        if self.x > 1000 or self.x < -1000 or self.y > 1000 or self.y < -1000: 
+            self.eventManager.unsubscribe(self)

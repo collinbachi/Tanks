@@ -42,42 +42,46 @@ class Terrain:
         radius to be rerendered by the next frame
         '''
 
-        try:
-            if b.y < 0 or b.x < 0: 
-                lowy = b.y - b.blast - 1
-                highy = b.y + b.blast + 1
-                lowx = b.x - b.blast - 1
-                highx = b.x + b.blast + 1
-                if lowy < 0: lowy = 0
-                if lowx < 0: lowx = 0
-                if highy >= len(self.ter): highy = len(self.ter) 
-                if highx >= len(self.ter[0]): highx = len(self.ter[0]) 
-                if highy < lowy: highy = lowy + b.blast
-                if highx < lowx: highx = lowx + b.blast
-                self.changed = pygame.Rect(lowx, lowy, highx - lowx, highy - lowy)
-                global_vars.eventManager.post(events.Event(type='impact', rect = self.changed))
-                return True
-            if self.ter[b.y][b.x] == 1:
-                #Collision!
-                lowy = b.y - b.blast - 1
-                highy = b.y + b.blast + 1
-                lowx = b.x - b.blast - 1
-                highx = b.x + b.blast + 1
-                if lowy < 0: lowy = 0
-                if lowx < 0: lowx = 0
-                if highy >= len(self.ter): highy = len(self.ter) 
-                if highx >= len(self.ter[0]): highx = len(self.ter[0]) 
-                
-                for i in range(lowy, highy):
-                    for j in range(lowx, highx):
-                        if math.sqrt(math.pow(i - b.y, 2) + math.pow(j - b.x, 2)) < b.blast: 
-                            self.ter[i][j] = 0
 
-                self.changed = pygame.Rect(lowx, lowy, highx - lowx, highy - lowy)
-                global_vars.eventManager.post(events.Event(type='impact', rect = self.changed))
-                return True
-        except IndexError: # Shouldn't happen?
+
+        #try:
+        if (b.y < 0 or b.x < 0) or (b.y >= len(self.ter) or b.x >= len(self.ter[0])): 
             return True
+            '''lowy = b.y - b.blast - 1
+            highy = b.y + b.blast + 1
+            lowx = b.x - b.blast - 1
+            highx = b.x + b.blast + 1
+            if lowy < 0: lowy = 0
+            if lowx < 0: lowx = 0
+            if highy < lowy: highy = lowy + b.blast
+            if highx < lowx: highx = lowx + b.blast
+            if highy >= len(self.ter): highy = len(self.ter) 
+            if highx >= len(self.ter[0]): highx = len(self.ter[0]) 
+            
+            self.changed = pygame.Rect(lowx, lowy, highx - lowx, highy - lowy)
+            global_vars.eventManager.post(events.Event(type='impact', rect = self.changed))
+            return True'''
+        if self.ter[b.y][b.x] == 1:
+            #Collision!
+            lowy = b.y - b.blast - 1
+            highy = b.y + b.blast + 1
+            lowx = b.x - b.blast - 1
+            highx = b.x + b.blast + 1
+            if lowy < 0: lowy = 0
+            if lowx < 0: lowx = 0
+            if highy >= len(self.ter): highy = len(self.ter) 
+            if highx >= len(self.ter[0]): highx = len(self.ter[0]) 
+            
+            for i in range(lowy, highy):
+                for j in range(lowx, highx):
+                    if math.sqrt(math.pow(i - b.y, 2) + math.pow(j - b.x, 2)) < b.blast: 
+                        self.ter[i][j] = 0
+
+            self.changed = pygame.Rect(lowx, lowy, highx - lowx, highy - lowy)
+            global_vars.eventManager.post(events.Event(type='impact', rect = self.changed))
+            return True
+        #except IndexError: # Shouldn't happen?
+        
         
     def generateTerrain(self):
         ''' 

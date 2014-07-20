@@ -40,8 +40,9 @@ class LayerManager(events.EventUser):
     def newTerrain(self, image, terrain):
 
         terrainView = terrain_view.TerrainView(image, terrain)
-        self.layersList.append(terrainView)
-        self.layersList = sorted(self.layersList, key=attrgetter('depth'), reverse=True)
+        self.terrainView = terrainView
+        #self.layersList.append(terrainView)
+        #self.layersList = sorted(self.layersList, key=attrgetter('depth'), reverse=True)
         return terrainView
     
     def newSprite(self, image, rect=None):
@@ -78,6 +79,7 @@ class Sprite(events.EventUser, layers.Layer):
         self.rect.width = self.image.get_rect().width
         self.rect.height = self.image.get_rect().height
         self.myPixels = pygame.PixelArray(self.image.copy())
+        self.image.set_colorkey(pygame.Color('white'))
         layers.Layer.__init__(self, self)
         
     def getPixel(self, x, y, returnsToManager=False):
@@ -112,9 +114,18 @@ class Sprite(events.EventUser, layers.Layer):
             #    if self.TEXT_TEST: print 'WORKINGHERE?'
             #except: pass
             pass
-        else: 
+        else:      
             global_vars.window.blit(self.image, self.rect)
             return
+
+        # FIXING render to use alpha colorkey #
+        collisions = [sprite for sprite in global_vars.layerManager.layersList if sprite.rect.width < 100 and sprite.rect.colliderect(self.rect)]
+        for sprite in collisions:
+            global_vars.window.blit(sprite.image, sprite.rect)
+        return
+        #         WORKING     WORKING         #
+
+
         pix = pygame.PixelArray(self.image.copy())
         for i in range(self.rect.height):
             for j in range(self.rect.width):
@@ -130,16 +141,30 @@ class Sprite(events.EventUser, layers.Layer):
         #    if self.TEXT_TEST: global_vars.window.blit(blitSurface, (250,250))
         #except: pass
         
-        
+    def wipe(self):
+        ''' erases sprite '''
+
+        global_vars.layerManager.terrainView.terrain.changed = self.rect
+        global_vars.layerManager.terrainView.drawTerrain()
+        self.image.fill(pygame.Color('white'))
+
     def move(self, x, y):
         ''' redraws sprite when it moves '''
         
         if x == self.rect.left and y == self.rect.top: return
+        
+        # wipe, draw background over rect
+        global_vars.layerManager.terrainView.terrain.changed = self.rect
+        global_vars.layerManager.terrainView.drawTerrain()
+
+        # render a transparent rect, so that other objects caught in the wipe will rerender
         tempImage = self.image
         self.image = self.image.copy()
         self.image.fill(pygame.Color('white'))
         self.render()
         self.image = tempImage
+
+        # render this at new location
         self.rect.left = x
         self.rect.top = y
         self.render()

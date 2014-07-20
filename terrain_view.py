@@ -73,6 +73,16 @@ class TerrainView(layers.Layer, events.EventUser):
             #print 'FULL REDRAW'
         
         startTime = time.time()
+
+        #check to avoid indexError
+        if lowy < 0: lowy = 0
+        if lowx < 0: lowx = 0
+        if highy < lowy: highy = lowy + self.terrain.changed.width
+        if highx < lowx: highx = lowx + self.terrain.changed.height
+        if highy >= len(self.terrain.ter): highy = len(self.terrain.ter) 
+        if highx >= len(self.terrain.ter[0]): highx = len(self.terrain.ter[0]) 
+
+
         for i in range(lowy, highy):
             for j in range(lowx, highx):
                 if i < 0 or j < 0: 
@@ -91,4 +101,4 @@ class TerrainView(layers.Layer, events.EventUser):
         except: return
         global_vars.window.blit(news, pygame.Rect(lowx, lowy, highx - lowx, highy - lowy)) 
         self.terrain.changed = False
-        global_vars.eventManager.post(events.Event(type='render tanks'))
+        #global_vars.eventManager.post(events.Event(type='render tanks'))
